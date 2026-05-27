@@ -282,8 +282,11 @@ body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg0);color
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  window.db = getFirestore(app);
+  window.doc = doc;
+window.setDoc = setDoc;
+window.getDoc = getDoc;
 const firebaseConfig = {
   apiKey: "AIzaSyBE-37usBZ8A8TDdFPhkidW59HJR0ZAsPY",
   authDomain: "yarel-calendar.firebaseapp.com",
