@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///C:/Users/PC/Downloads/calendar_fixed.html -->
+<html lang="he" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>יומן</title>
+<link rel="stylesheet" href="./calender_files/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg0:#0f1117;--bg1:#1a1d27;--bg2:#22263a;--bg3:#2a2f45;--bg4:#343a52;--tx0:#eef0f6;--tx1:#b0b8d1;--tx2:#707a96;--acc:#4f8ef7;--acc2:#3b6fd4;--red:#f47373;--brd:rgba(255,255,255,0.07);--brd2:rgba(255,255,255,0.12);--PX:56px}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg0);color:var(--tx0)}
+.root{display:flex;height:740px;background:var(--bg0);border-radius:16px;overflow:hidden;direction:rtl;border:1px solid var(--brd2)}
+.sb{width:214px;min-width:214px;background:var(--bg1);border-left:1px solid var(--brd);display:flex;flex-direction:column;padding:14px 10px;gap:14px;overflow-y:auto}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--brd);background:var(--bg1);direction:rtl}
+.vt-wrap{display:flex;gap:3px;background:var(--bg2);padding:3px;border-radius:10px}
+.vt{padding:4px 10px;font-size:12px;font-weight:500;background:transparent;color:var(--tx1);cursor:pointer;border:none;border-radius:7px}
+.vt.active{background:var(--bg4);color:var(--tx0)}
+.vt:hover:not(.active){background:var(--bg3);color:var(--tx0)}
+.cbtn{display:flex;align-items:center;gap:6px;padding:7px 16px;background:var(--acc);border:none;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;color:#fff}
+.cbtn:hover{background:var(--acc2)}
+.nav-btn{background:none;border:none;cursor:pointer;color:var(--tx1);font-size:18px;padding:4px 8px;border-radius:8px;line-height:1}
+.nav-btn:hover{background:var(--bg3);color:var(--tx0)}
+.today-btn{background:none;border:1px solid var(--brd2);cursor:pointer;color:var(--tx1);font-size:12px;font-weight:500;padding:5px 12px;border-radius:8px}
+.today-btn:hover{background:var(--bg3);color:var(--tx0)}
+.main-lbl{font-size:17px;font-weight:500;color:var(--tx0)}
+.mini-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.mini-lbl{font-size:12px;font-weight:500;color:var(--tx0)}
+.mini-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;text-align:center}
+.mdl{font-size:10px;color:var(--tx2);padding:2px 0}
+.md{font-size:11px;border-radius:50%;cursor:pointer;aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--tx1)}
+.md:hover{background:var(--bg3)}
+.md.today-dot{background:var(--acc);color:#fff;font-weight:600}
+.md.om{color:var(--tx2)}
+.sec-hdr{font-size:10px;font-weight:600;color:var(--tx2);letter-spacing:.8px;padding:0 4px;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase}
+.add-cal{background:none;border:none;color:var(--acc);cursor:pointer;font-size:18px;line-height:1}
+.cal-li{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--tx1)}
+.cal-li:hover{background:var(--bg2)}
+.cal-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cal-x{margin-right:auto;color:var(--tx2);cursor:pointer;font-size:13px;opacity:0}
+.cal-li:hover .cal-x{opacity:1}
+.cal-x:hover{color:var(--red)}
+.divider{height:1px;background:var(--brd);margin:2px 0}
+.wk-hdr{display:grid;background:var(--bg1);border-bottom:1px solid var(--brd);flex-shrink:0}
+.whc{padding:8px 4px 6px;text-align:center}
+.day-label{font-size:10px;color:var(--tx2);font-weight:500;text-transform:uppercase;letter-spacing:.4px;display:block}
+.day-num{font-size:22px;font-weight:300;color:var(--tx0);cursor:pointer;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;margin:2px auto 0}
+.day-num:hover{background:var(--bg3)}
+.day-num.today-num{background:var(--acc);color:#fff;font-weight:500}
+.ad-row{display:grid;background:var(--bg1);border-bottom:1px solid var(--brd);flex-shrink:0}
+.ad-corner{background:var(--bg1);border-left:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--tx2)}
+.ad-cell{border-left:1px solid var(--brd);padding:2px 3px;min-height:24px;cursor:pointer}
+.ad-ev{font-size:10px;border-radius:4px;padding:1px 6px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;cursor:pointer}
+.wbody{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent;will-change:scroll-position}
+.wgrid{display:grid;min-height:calc(var(--PX)*24);position:relative}
+.tcol{display:flex;flex-direction:column;background:var(--bg1)}
+.ts{height:var(--PX);padding-right:8px;text-align:right;font-size:10px;color:var(--tx2);border-top:1px solid var(--brd);position:relative;top:-6px}
+.dcol{border-left:1px solid var(--brd);position:relative;background:var(--bg0)}
+.hline{position:absolute;left:0;right:0;border-top:1px solid var(--brd);pointer-events:none}
+.hline.half{border-top-style:dashed;opacity:.35}
+.ev{position:absolute;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:500;cursor:grab;overflow:hidden;z-index:2;user-select:none;will-change:transform}
+.ev:active{cursor:grabbing}
+.ev-time{display:block;font-size:9px;font-weight:400;margin-top:1px;opacity:.75}
+.ev-subs{display:flex;flex-direction:column;gap:2px;margin-top:3px;overflow:hidden}
+.ev-sub{display:flex;align-items:center;gap:4px;font-size:9px;padding:1px 4px;background:rgba(255,255,255,.06);border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev-sub.done{text-decoration:line-through;opacity:.5}
+.resize-handle{position:absolute;bottom:0;left:0;right:0;height:7px;cursor:s-resize;z-index:5}
+.resize-handle:hover{background:rgba(255,255,255,.12);border-radius:0 0 6px 6px}
+.now-line{position:absolute;left:0;right:0;height:2px;background:#f47373;z-index:5;pointer-events:none}
+.now-dot{position:absolute;right:-5px;top:-5px;width:10px;height:10px;background:#f47373;border-radius:50%}
+.tooltip{position:fixed;background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--tx0);z-index:200;pointer-events:none;max-width:220px;direction:rtl}
+.tooltip .tt-title{font-weight:600;font-size:13px;margin-bottom:4px}
+.tooltip .tt-row{font-size:11px;color:var(--tx1);margin-top:3px;display:flex;align-items:center;gap:5px}
+.mo-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);overflow:hidden}
+.mo-dl{font-size:10px;color:var(--tx2);text-align:center;padding:6px 0;border-bottom:1px solid var(--brd);background:var(--bg1);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.mo-cell{border-left:1px solid var(--brd);border-bottom:1px solid var(--brd);padding:4px;display:flex;flex-direction:column;gap:2px;overflow:hidden;cursor:pointer;background:var(--bg0);min-height:88px}
+.mo-cell:hover{background:var(--bg1)}
+.mo-num{font-size:11px;color:var(--tx2);width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.mo-num.today-num{background:var(--acc);color:#fff;font-weight:500}
+.mo-ev{font-size:10px;border-radius:3px;padding:1px 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.mo-more{font-size:10px;color:var(--tx2);padding:1px 4px;cursor:pointer}
+.mo-more:hover{color:var(--tx0)}
+.ag-body{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin;scrollbar-color:var(--bg4) transparent}
+.ag-dh{font-size:12px;font-weight:600;color:var(--tx2);padding:14px 0 5px;letter-spacing:.3px;border-bottom:1px solid var(--brd);margin-bottom:4px}
+.ag-ev{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;cursor:pointer;margin-bottom:2px}
+.ag-ev:hover{background:var(--bg2)}
+.srch-wrap{display:flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid var(--brd2);border-radius:999px;background:var(--bg2);flex:1;max-width:240px;position:relative}
+.srch-wrap input{border:none;background:transparent;outline:none;font-size:12px;color:var(--tx0);width:100%;font-family:inherit;direction:rtl}
+.srch-wrap input::placeholder{color:var(--tx2)}
+.search-results{position:absolute;top:calc(100% + 6px);right:0;left:0;background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;z-index:100;max-height:200px;overflow-y:auto;display:none}
+.sr-item{padding:8px 12px;font-size:12px;color:var(--tx0);cursor:pointer;border-bottom:1px solid var(--brd);direction:rtl}
+.sr-item:last-child{border-bottom:none}
+.sr-item:hover{background:var(--bg3)}
+.sr-date{font-size:10px;color:var(--tx2);display:block;margin-top:2px}
+.scroll-now-btn{background:none;border:1px solid var(--brd2);cursor:pointer;color:var(--tx2);font-size:11px;padding:4px 10px;border-radius:8px;white-space:nowrap}
+.scroll-now-btn:hover{background:var(--bg3);color:var(--tx0)}
+.modal-bg{position:absolute;inset:0;z-index:80;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
+.modal{background:var(--bg1);border-radius:14px;padding:22px;width:460px;max-width:96%;border:1px solid var(--brd2);max-height:88vh;overflow-y:auto;scrollbar-width:thin;direction:rtl}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--tx0)}
+.fr{margin-bottom:12px}
+.fr label{font-size:11px;color:var(--tx2);display:block;margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.fr input,.fr select,.fr textarea{width:100%;padding:8px 10px;border:1px solid var(--brd2);border-radius:8px;font-size:13px;background:var(--bg2);color:var(--tx0);outline:none;font-family:inherit;direction:rtl}
+.fr input:focus,.fr select:focus,.fr textarea:focus{border-color:var(--acc)}
+.fr textarea{resize:vertical;min-height:55px}
+.fr select option{background:var(--bg2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ma{display:flex;justify-content:flex-start;gap:6px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.btn-p{padding:7px 18px;background:var(--acc);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:500}
+.btn-p:hover{background:var(--acc2)}
+.btn-g{padding:7px 14px;background:var(--bg3);border:1px solid var(--brd2);border-radius:8px;font-size:13px;cursor:pointer;color:var(--tx1)}
+.btn-g:hover{background:var(--bg4);color:var(--tx0)}
+.btn-d{padding:7px 12px;background:transparent;border:1px solid rgba(244,115,115,.3);border-radius:8px;font-size:12px;cursor:pointer;color:var(--red)}
+.btn-d:hover{background:rgba(244,115,115,.1)}
+.color-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px}
+.csw{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent}
+.csw:hover{transform:scale(1.15)}
+.csw.sel{border-color:#fff}
+.sub-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.sub-row{display:flex;align-items:center;gap:7px;background:var(--bg2);border-radius:8px;padding:6px 8px}
+.sub-row input[type=checkbox]{width:15px;height:15px;cursor:pointer;flex-shrink:0;accent-color:var(--acc)}
+.sub-row input[type=text]{flex:1;background:transparent;border:none;border-bottom:1px solid var(--brd2);border-radius:0;padding:2px 4px;font-size:12px;color:var(--tx0);outline:none;font-family:inherit;direction:rtl}
+.sub-row input[type=text]:focus{border-bottom-color:var(--acc)}
+.sub-row input[type=time]{background:transparent;border:none;border-bottom:1px solid var(--brd2);padding:2px;font-size:11px;color:var(--tx2);outline:none;width:68px;flex-shrink:0}
+.sub-row input[type=time]:focus{border-bottom-color:var(--acc);color:var(--tx0)}
+.rm-sub{background:none;border:none;cursor:pointer;color:var(--tx2);font-size:13px;padding:0 2px;flex-shrink:0}
+.rm-sub:hover{color:var(--red)}
+.sub-add-btn{font-size:12px;color:var(--acc);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-top:5px;background:none;border:none;font-family:inherit}
+.drag-ghost{position:fixed;pointer-events:none;opacity:.9;z-index:999;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:500;color:#fff;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.drop-preview{position:absolute;border-radius:6px;z-index:1;pointer-events:none;border:2px dashed rgba(255,255,255,.3)}
+.adm-bg{position:absolute;inset:0;z-index:80;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
+.adm-modal{background:var(--bg1);border-radius:14px;padding:20px;width:340px;max-width:96%;border:1px solid var(--brd2);max-height:80vh;overflow-y:auto;direction:rtl}
+.adm-modal h3{font-size:14px;font-weight:600;color:var(--tx0);margin-bottom:12px}
+.adm-row{display:flex;align-items:center;gap:8px;padding:5px 4px;border-radius:6px}
+.adm-row:hover{background:var(--bg2)}
+.adm-row input[type=checkbox]{accent-color:var(--acc);width:15px;height:15px;cursor:pointer}
+.adm-row span{flex:1;font-size:13px}
+.adm-row .rm{color:var(--tx2);cursor:pointer;font-size:13px;opacity:0}
+.adm-row:hover .rm{opacity:1}
+.adm-row .rm:hover{color:var(--red)}
+.adm-input-row{display:flex;gap:6px;margin-top:10px}
+.adm-input-row input{flex:1;padding:7px 10px;border:1px solid var(--brd2);border-radius:8px;font-size:13px;background:var(--bg2);color:var(--tx0);outline:none;font-family:inherit;direction:rtl}
+.adm-input-row input:focus{border-color:var(--acc)}
+.rec-dialog{position:absolute;inset:0;z-index:90;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center}
+.rec-modal{background:var(--bg1);border-radius:12px;padding:20px;width:300px;border:1px solid var(--brd2);direction:rtl}
+.rec-modal h4{font-size:14px;font-weight:600;color:var(--tx0);margin-bottom:12px}
+.rec-opt{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--tx1);margin-bottom:4px}
+.rec-opt:hover{background:var(--bg3);color:var(--tx0)}
+.undo-bar{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--brd2);border-radius:10px;padding:8px 16px;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--tx1);z-index:100;white-space:nowrap;direction:rtl}
+.undo-btn{background:none;border:none;color:var(--acc);cursor:pointer;font-size:12px;font-weight:600}
+.undo-btn:hover{color:var(--tx0)}
+</style>
+</head>
+<body>
+<div style="position:relative">
+<div class="root" id="root">
+  <div class="sb">
+    <button class="cbtn" onclick="openModal()"><i class="ti ti-plus" aria-hidden="true" style="font-size:15px"></i> צור</button>
+    <div>
+      <div class="mini-hdr">
+        <span class="mini-lbl" id="miniLbl">מאי 2026</span>
+        <div style="display:flex;gap:2px">
+          <button class="nav-btn" style="font-size:14px" onclick="navMini(-1)">‹</button>
+          <button class="nav-btn" style="font-size:14px" onclick="navMini(1)">›</button>
+        </div>
+      </div>
+      <div class="mini-grid" id="miniGrid"><div class="mdl">א</div><div class="mdl">ב</div><div class="mdl">ג</div><div class="mdl">ד</div><div class="mdl">ה</div><div class="mdl">ו</div><div class="mdl">ש</div><div class="md om"></div><div class="md om"></div><div class="md om"></div><div class="md om"></div><div class="md om"></div><div class="md">1</div><div class="md">2</div><div class="md">3</div><div class="md">4</div><div class="md">5</div><div class="md">6</div><div class="md">7</div><div class="md">8</div><div class="md">9</div><div class="md">10</div><div class="md">11</div><div class="md">12</div><div class="md">13</div><div class="md">14</div><div class="md">15</div><div class="md">16</div><div class="md">17</div><div class="md">18</div><div class="md">19</div><div class="md">20</div><div class="md">21</div><div class="md">22</div><div class="md">23</div><div class="md">24</div><div class="md">25</div><div class="md">26</div><div class="md today-dot">27</div><div class="md">28</div><div class="md">29</div><div class="md">30</div><div class="md">31</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-hdr">היומנים שלי<button class="add-cal" onclick="addCal()"><i class="ti ti-plus" style="font-size:14px"></i></button></div>
+    <div id="calList"><div class="cal-li"><div class="cal-dot" style="background: rgb(79, 142, 247);"></div><span style="flex: 1 1 0%;">דני כהן</span><span class="cal-x"><i class="ti ti-x"></i></span></div><div class="cal-li"><div class="cal-dot" style="background: rgb(34, 197, 94);"></div><span style="flex: 1 1 0%;">תזכורות</span><span class="cal-x"><i class="ti ti-x"></i></span></div><div class="cal-li"><div class="cal-dot" style="background: rgb(244, 115, 115);"></div><span style="flex: 1 1 0%;">משימות</span><span class="cal-x"><i class="ti ti-x"></i></span></div></div>
+    <div class="divider"></div>
+    <div class="sec-hdr">אחרים</div>
+    <div class="cal-li"><div class="cal-dot" style="background:#22c55e"></div><span>ישראל – חגים</span></div>
+    <div class="cal-li"><div class="cal-dot" style="background:#a78bfa"></div><span>ימי הולדת</span></div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <button class="nav-btn" onclick="navMain(1)">‹</button>
+      <button class="today-btn" onclick="goToday()">היום</button>
+      <button class="nav-btn" onclick="navMain(-1)">›</button>
+      <span class="main-lbl" id="mainLbl">מאי–יוני 2026</span>
+      <button class="scroll-now-btn" onclick="scrollToNow()"><i class="ti ti-clock" style="font-size:12px"></i> עכשיו</button>
+      <div class="srch-wrap" style="margin-right:auto">
+        <i class="ti ti-search" style="font-size:13px;color:var(--tx2)" aria-hidden="true"></i>
+        <input type="text" id="searchInp" placeholder="חפש אירוע..." oninput="doSearch(this.value)" onblur="setTimeout(hideSearch,200)">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="vt-wrap">
+        <button class="vt active" id="vt-r" onclick="setView(&#39;r&#39;,this)">7 ימים</button>
+        <button class="vt" id="vt-w" onclick="setView(&#39;w&#39;,this)">שבוע</button>
+        <button class="vt" id="vt-3" onclick="setView(&#39;3&#39;,this)">3 ימים</button>
+        <button class="vt" id="vt-d" onclick="setView(&#39;d&#39;,this)">יום</button>
+        <button class="vt" id="vt-m" onclick="setView(&#39;m&#39;,this)">חודש</button>
+        <button class="vt" id="vt-a" onclick="setView(&#39;a&#39;,this)">סדר יום</button>
+      </div>
+    </div>
+    <div id="vc" style="flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative"><div class="wk-hdr" style="grid-template-columns: 44px repeat(7, 1fr);"><div style="background: var(--bg1); border-left: 1px solid var(--brd); display: flex; align-items: flex-end; padding: 0px 6px 4px; font-size: 9px; color: var(--tx2);">GMT+3</div><div class="whc"><span class="day-label">רביעי</span><div class="day-num today-num">27</div></div><div class="whc"><span class="day-label">חמישי</span><div class="day-num">28</div></div><div class="whc"><span class="day-label">שישי</span><div class="day-num">29</div></div><div class="whc"><span class="day-label">שבת</span><div class="day-num">30</div></div><div class="whc"><span class="day-label">ראשון</span><div class="day-num">31</div></div><div class="whc"><span class="day-label">שני</span><div class="day-num">1</div></div><div class="whc"><span class="day-label">שלישי</span><div class="day-num">2</div></div></div><div class="ad-row" style="grid-template-columns: 44px repeat(7, 1fr);"><div class="ad-corner">כל היום</div><div class="ad-cell"></div><div class="ad-cell"></div><div class="ad-cell"></div><div class="ad-cell"></div><div class="ad-cell"></div><div class="ad-cell"></div><div class="ad-cell"></div></div><div class="wbody"><div class="wgrid" style="grid-template-columns: 44px repeat(7, 1fr);"><div class="tcol"><div class="ts"></div><div class="ts">1:00</div><div class="ts">2:00</div><div class="ts">3:00</div><div class="ts">4:00</div><div class="ts">5:00</div><div class="ts">6:00</div><div class="ts">7:00</div><div class="ts">8:00</div><div class="ts">9:00</div><div class="ts">10:00</div><div class="ts">11:00</div><div class="ts">12:00</div><div class="ts">13:00</div><div class="ts">14:00</div><div class="ts">15:00</div><div class="ts">16:00</div><div class="ts">17:00</div><div class="ts">18:00</div><div class="ts">19:00</div><div class="ts">20:00</div><div class="ts">21:00</div><div class="ts">22:00</div><div class="ts">23:00</div></div><div class="dcol"><div class="hline" style="top: 0px;"></div><div class="hline half" style="top: 28px;"></div><div class="hline" style="top: 56px;"></div><div class="hline half" style="top: 84px;"></div><div class="hline" style="top: 112px;"></div><div class="hline half" style="top: 140px;"></div><div class="hline" style="top: 168px;"></div><div class="hline half" style="top: 196px;"></div><div class="hline" style="top: 224px;"></div><div class="hline half" style="top: 252px;"></div><div class="hline" style="top: 280px;"></div><div class="hline half" style="top: 308px;"></div><div class="hline" style="top: 336px;"></div><div class="hline half" style="top: 364px;"></div><div class="hline" style="top: 392px;"></div><div class="hline half" style="top: 420px;"></div><div class="hline" style="top: 448px;"></div><div class="hline half" style="top: 476px;"></div><div class="hline" style="top: 504px;"></div><div class="hline half" style="top: 532px;"></div><div class="hline" style="top: 560px;"></div><div class="hline half" style="top: 588px;"></div><div class="hline" style="top: 616px;"></div><div class="hline half" style="top: 644px;"></div><div class="hline" style="top: 672px;"></div><div class="hline half" style="top: 700px;"></div><div class="hline" style="top: 728px;"></div><div class="hline half" style="top: 756px;"></div><div class="hline" style="top: 784px;"></div><div class="hline half" style="top: 812px;"></div><div class="hline" style="top: 840px;"></div><div class="hline half" style="top: 868px;"></div><div class="hline" style="top: 896px;"></div><div class="hline half" style="top: 924px;"></div><div class="hline" style="top: 952px;"></div><div class="hline half" style="top: 980px;"></div><div class="hline" style="top: 1008px;"></div><div class="hline half" style="top: 1036px;"></div><div class="hline" style="top: 1064px;"></div><div class="hline half" style="top: 1092px;"></div><div class="hline" style="top: 1120px;"></div><div class="hline half" style="top: 1148px;"></div><div class="hline" style="top: 1176px;"></div><div class="hline half" style="top: 1204px;"></div><div class="hline" style="top: 1232px;"></div><div class="hline half" style="top: 1260px;"></div><div class="hline" style="top: 1288px;"></div><div class="ev" style="top: 392px; height: 56px; background: rgb(45, 27, 78); color: rgb(221, 214, 254); border-right: 3px solid rgb(34, 197, 94); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">אימון כושר</span><span class="ev-time">07:00–08:00</span><div class="ev-subs"><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:00 חימום</div><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:10 כושר</div><div class="ev-sub">+1 עוד</div></div><div class="resize-handle"></div></div><div class="ev" style="top: 532px; height: 56px; background: rgb(30, 58, 95); color: rgb(168, 200, 255); border-right: 3px solid rgb(79, 142, 247); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">ישיבת צוות</span><span class="ev-time">09:30–10:30</span><div class="resize-handle"></div></div><div class="now-line" style="top: 627.2px;"><div class="now-dot"></div></div></div><div class="dcol"><div class="hline" style="top: 0px;"></div><div class="hline half" style="top: 28px;"></div><div class="hline" style="top: 56px;"></div><div class="hline half" style="top: 84px;"></div><div class="hline" style="top: 112px;"></div><div class="hline half" style="top: 140px;"></div><div class="hline" style="top: 168px;"></div><div class="hline half" style="top: 196px;"></div><div class="hline" style="top: 224px;"></div><div class="hline half" style="top: 252px;"></div><div class="hline" style="top: 280px;"></div><div class="hline half" style="top: 308px;"></div><div class="hline" style="top: 336px;"></div><div class="hline half" style="top: 364px;"></div><div class="hline" style="top: 392px;"></div><div class="hline half" style="top: 420px;"></div><div class="hline" style="top: 448px;"></div><div class="hline half" style="top: 476px;"></div><div class="hline" style="top: 504px;"></div><div class="hline half" style="top: 532px;"></div><div class="hline" style="top: 560px;"></div><div class="hline half" style="top: 588px;"></div><div class="hline" style="top: 616px;"></div><div class="hline half" style="top: 644px;"></div><div class="hline" style="top: 672px;"></div><div class="hline half" style="top: 700px;"></div><div class="hline" style="top: 728px;"></div><div class="hline half" style="top: 756px;"></div><div class="hline" style="top: 784px;"></div><div class="hline half" style="top: 812px;"></div><div class="hline" style="top: 840px;"></div><div class="hline half" style="top: 868px;"></div><div class="hline" style="top: 896px;"></div><div class="hline half" style="top: 924px;"></div><div class="hline" style="top: 952px;"></div><div class="hline half" style="top: 980px;"></div><div class="hline" style="top: 1008px;"></div><div class="hline half" style="top: 1036px;"></div><div class="hline" style="top: 1064px;"></div><div class="hline half" style="top: 1092px;"></div><div class="hline" style="top: 1120px;"></div><div class="hline half" style="top: 1148px;"></div><div class="hline" style="top: 1176px;"></div><div class="hline half" style="top: 1204px;"></div><div class="hline" style="top: 1232px;"></div><div class="hline half" style="top: 1260px;"></div><div class="hline" style="top: 1288px;"></div><div class="ev" style="top: 378px; height: 56px; background: rgb(45, 27, 78); color: rgb(221, 214, 254); border-right: 3px solid rgb(34, 197, 94); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">אימון כושר</span><span class="ev-time">06:45–07:45</span><div class="ev-subs"><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:00 חימום</div><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:10 כושר</div><div class="ev-sub">+1 עוד</div></div><div class="resize-handle"></div></div><div class="ev" style="top: 728px; height: 56px; background: rgb(26, 61, 43); color: rgb(134, 239, 172); border-right: 3px solid rgb(79, 142, 247); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">ארוחת צהריים</span><span class="ev-time">13:00–14:00</span><div class="resize-handle"></div></div></div><div class="dcol"><div class="hline" style="top: 0px;"></div><div class="hline half" style="top: 28px;"></div><div class="hline" style="top: 56px;"></div><div class="hline half" style="top: 84px;"></div><div class="hline" style="top: 112px;"></div><div class="hline half" style="top: 140px;"></div><div class="hline" style="top: 168px;"></div><div class="hline half" style="top: 196px;"></div><div class="hline" style="top: 224px;"></div><div class="hline half" style="top: 252px;"></div><div class="hline" style="top: 280px;"></div><div class="hline half" style="top: 308px;"></div><div class="hline" style="top: 336px;"></div><div class="hline half" style="top: 364px;"></div><div class="hline" style="top: 392px;"></div><div class="hline half" style="top: 420px;"></div><div class="hline" style="top: 448px;"></div><div class="hline half" style="top: 476px;"></div><div class="hline" style="top: 504px;"></div><div class="hline half" style="top: 532px;"></div><div class="hline" style="top: 560px;"></div><div class="hline half" style="top: 588px;"></div><div class="hline" style="top: 616px;"></div><div class="hline half" style="top: 644px;"></div><div class="hline" style="top: 672px;"></div><div class="hline half" style="top: 700px;"></div><div class="hline" style="top: 728px;"></div><div class="hline half" style="top: 756px;"></div><div class="hline" style="top: 784px;"></div><div class="hline half" style="top: 812px;"></div><div class="hline" style="top: 840px;"></div><div class="hline half" style="top: 868px;"></div><div class="hline" style="top: 896px;"></div><div class="hline half" style="top: 924px;"></div><div class="hline" style="top: 952px;"></div><div class="hline half" style="top: 980px;"></div><div class="hline" style="top: 1008px;"></div><div class="hline half" style="top: 1036px;"></div><div class="hline" style="top: 1064px;"></div><div class="hline half" style="top: 1092px;"></div><div class="hline" style="top: 1120px;"></div><div class="hline half" style="top: 1148px;"></div><div class="hline" style="top: 1176px;"></div><div class="hline half" style="top: 1204px;"></div><div class="hline" style="top: 1232px;"></div><div class="hline half" style="top: 1260px;"></div><div class="hline" style="top: 1288px;"></div><div class="ev" style="top: 392px; height: 56px; background: rgb(45, 27, 78); color: rgb(221, 214, 254); border-right: 3px solid rgb(34, 197, 94); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">אימון כושר</span><span class="ev-time">07:00–08:00</span><div class="ev-subs"><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:00 חימום</div><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:10 כושר</div><div class="ev-sub">+1 עוד</div></div><div class="resize-handle"></div></div><div class="ev" style="top: 560px; height: 84px; background: rgb(14, 47, 62); color: rgb(165, 243, 252); border-right: 3px solid rgb(79, 142, 247); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">סקירה שבועית</span><span class="ev-time">10:00–11:30</span><div class="resize-handle"></div></div><div class="ev" style="top: 728px; height: 56px; background: rgb(26, 61, 43); color: rgb(134, 239, 172); border-right: 3px solid rgb(79, 142, 247); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">ארוחת צהריים</span><span class="ev-time">13:00–14:00</span><div class="resize-handle"></div></div></div><div class="dcol"><div class="hline" style="top: 0px;"></div><div class="hline half" style="top: 28px;"></div><div class="hline" style="top: 56px;"></div><div class="hline half" style="top: 84px;"></div><div class="hline" style="top: 112px;"></div><div class="hline half" style="top: 140px;"></div><div class="hline" style="top: 168px;"></div><div class="hline half" style="top: 196px;"></div><div class="hline" style="top: 224px;"></div><div class="hline half" style="top: 252px;"></div><div class="hline" style="top: 280px;"></div><div class="hline half" style="top: 308px;"></div><div class="hline" style="top: 336px;"></div><div class="hline half" style="top: 364px;"></div><div class="hline" style="top: 392px;"></div><div class="hline half" style="top: 420px;"></div><div class="hline" style="top: 448px;"></div><div class="hline half" style="top: 476px;"></div><div class="hline" style="top: 504px;"></div><div class="hline half" style="top: 532px;"></div><div class="hline" style="top: 560px;"></div><div class="hline half" style="top: 588px;"></div><div class="hline" style="top: 616px;"></div><div class="hline half" style="top: 644px;"></div><div class="hline" style="top: 672px;"></div><div class="hline half" style="top: 700px;"></div><div class="hline" style="top: 728px;"></div><div class="hline half" style="top: 756px;"></div><div class="hline" style="top: 784px;"></div><div class="hline half" style="top: 812px;"></div><div class="hline" style="top: 840px;"></div><div class="hline half" style="top: 868px;"></div><div class="hline" style="top: 896px;"></div><div class="hline half" style="top: 924px;"></div><div class="hline" style="top: 952px;"></div><div class="hline half" style="top: 980px;"></div><div class="hline" style="top: 1008px;"></div><div class="hline half" style="top: 1036px;"></div><div class="hline" style="top: 1064px;"></div><div class="hline half" style="top: 1092px;"></div><div class="hline" style="top: 1120px;"></div><div class="hline half" style="top: 1148px;"></div><div class="hline" style="top: 1176px;"></div><div class="hline half" style="top: 1204px;"></div><div class="hline" style="top: 1232px;"></div><div class="hline half" style="top: 1260px;"></div><div class="hline" style="top: 1288px;"></div><div class="ev" style="top: 392px; height: 56px; background: rgb(45, 27, 78); color: rgb(221, 214, 254); border-right: 3px solid rgb(34, 197, 94); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">אימון כושר</span><span class="ev-time">07:00–08:00</span><div class="ev-subs"><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:00 חימום</div><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:10 כושר</div><div class="ev-sub">+1 עוד</div></div><div class="resize-handle"></div></div><div class="ev" style="top: 784px; height: 56px; background: rgb(26, 48, 32); color: rgb(187, 247, 208); border-right: 3px solid rgb(79, 142, 247); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">פגישת לקוח</span><span class="ev-time">14:00–15:00</span><div class="resize-handle"></div></div></div><div class="dcol"><div class="hline" style="top: 0px;"></div><div class="hline half" style="top: 28px;"></div><div class="hline" style="top: 56px;"></div><div class="hline half" style="top: 84px;"></div><div class="hline" style="top: 112px;"></div><div class="hline half" style="top: 140px;"></div><div class="hline" style="top: 168px;"></div><div class="hline half" style="top: 196px;"></div><div class="hline" style="top: 224px;"></div><div class="hline half" style="top: 252px;"></div><div class="hline" style="top: 280px;"></div><div class="hline half" style="top: 308px;"></div><div class="hline" style="top: 336px;"></div><div class="hline half" style="top: 364px;"></div><div class="hline" style="top: 392px;"></div><div class="hline half" style="top: 420px;"></div><div class="hline" style="top: 448px;"></div><div class="hline half" style="top: 476px;"></div><div class="hline" style="top: 504px;"></div><div class="hline half" style="top: 532px;"></div><div class="hline" style="top: 560px;"></div><div class="hline half" style="top: 588px;"></div><div class="hline" style="top: 616px;"></div><div class="hline half" style="top: 644px;"></div><div class="hline" style="top: 672px;"></div><div class="hline half" style="top: 700px;"></div><div class="hline" style="top: 728px;"></div><div class="hline half" style="top: 756px;"></div><div class="hline" style="top: 784px;"></div><div class="hline half" style="top: 812px;"></div><div class="hline" style="top: 840px;"></div><div class="hline half" style="top: 868px;"></div><div class="hline" style="top: 896px;"></div><div class="hline half" style="top: 924px;"></div><div class="hline" style="top: 952px;"></div><div class="hline half" style="top: 980px;"></div><div class="hline" style="top: 1008px;"></div><div class="hline half" style="top: 1036px;"></div><div class="hline" style="top: 1064px;"></div><div class="hline half" style="top: 1092px;"></div><div class="hline" style="top: 1120px;"></div><div class="hline half" style="top: 1148px;"></div><div class="hline" style="top: 1176px;"></div><div class="hline half" style="top: 1204px;"></div><div class="hline" style="top: 1232px;"></div><div class="hline half" style="top: 1260px;"></div><div class="hline" style="top: 1288px;"></div><div class="ev" style="top: 392px; height: 56px; background: rgb(45, 27, 78); color: rgb(221, 214, 254); border-right: 3px solid rgb(34, 197, 94); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">אימון כושר</span><span class="ev-time">07:00–08:00</span><div class="ev-subs"><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:00 חימום</div><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:10 כושר</div><div class="ev-sub">+1 עוד</div></div><div class="resize-handle"></div></div></div><div class="dcol"><div class="hline" style="top: 0px;"></div><div class="hline half" style="top: 28px;"></div><div class="hline" style="top: 56px;"></div><div class="hline half" style="top: 84px;"></div><div class="hline" style="top: 112px;"></div><div class="hline half" style="top: 140px;"></div><div class="hline" style="top: 168px;"></div><div class="hline half" style="top: 196px;"></div><div class="hline" style="top: 224px;"></div><div class="hline half" style="top: 252px;"></div><div class="hline" style="top: 280px;"></div><div class="hline half" style="top: 308px;"></div><div class="hline" style="top: 336px;"></div><div class="hline half" style="top: 364px;"></div><div class="hline" style="top: 392px;"></div><div class="hline half" style="top: 420px;"></div><div class="hline" style="top: 448px;"></div><div class="hline half" style="top: 476px;"></div><div class="hline" style="top: 504px;"></div><div class="hline half" style="top: 532px;"></div><div class="hline" style="top: 560px;"></div><div class="hline half" style="top: 588px;"></div><div class="hline" style="top: 616px;"></div><div class="hline half" style="top: 644px;"></div><div class="hline" style="top: 672px;"></div><div class="hline half" style="top: 700px;"></div><div class="hline" style="top: 728px;"></div><div class="hline half" style="top: 756px;"></div><div class="hline" style="top: 784px;"></div><div class="hline half" style="top: 812px;"></div><div class="hline" style="top: 840px;"></div><div class="hline half" style="top: 868px;"></div><div class="hline" style="top: 896px;"></div><div class="hline half" style="top: 924px;"></div><div class="hline" style="top: 952px;"></div><div class="hline half" style="top: 980px;"></div><div class="hline" style="top: 1008px;"></div><div class="hline half" style="top: 1036px;"></div><div class="hline" style="top: 1064px;"></div><div class="hline half" style="top: 1092px;"></div><div class="hline" style="top: 1120px;"></div><div class="hline half" style="top: 1148px;"></div><div class="hline" style="top: 1176px;"></div><div class="hline half" style="top: 1204px;"></div><div class="hline" style="top: 1232px;"></div><div class="hline half" style="top: 1260px;"></div><div class="hline" style="top: 1288px;"></div><div class="ev" style="top: 392px; height: 56px; background: rgb(45, 27, 78); color: rgb(221, 214, 254); border-right: 3px solid rgb(34, 197, 94); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">אימון כושר</span><span class="ev-time">07:00–08:00</span><div class="ev-subs"><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:00 חימום</div><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:10 כושר</div><div class="ev-sub">+1 עוד</div></div><div class="resize-handle"></div></div><div class="ev" style="top: 728px; height: 56px; background: rgb(26, 61, 43); color: rgb(134, 239, 172); border-right: 3px solid rgb(79, 142, 247); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">ארוחת צהריים</span><span class="ev-time">13:00–14:00</span><div class="resize-handle"></div></div></div><div class="dcol"><div class="hline" style="top: 0px;"></div><div class="hline half" style="top: 28px;"></div><div class="hline" style="top: 56px;"></div><div class="hline half" style="top: 84px;"></div><div class="hline" style="top: 112px;"></div><div class="hline half" style="top: 140px;"></div><div class="hline" style="top: 168px;"></div><div class="hline half" style="top: 196px;"></div><div class="hline" style="top: 224px;"></div><div class="hline half" style="top: 252px;"></div><div class="hline" style="top: 280px;"></div><div class="hline half" style="top: 308px;"></div><div class="hline" style="top: 336px;"></div><div class="hline half" style="top: 364px;"></div><div class="hline" style="top: 392px;"></div><div class="hline half" style="top: 420px;"></div><div class="hline" style="top: 448px;"></div><div class="hline half" style="top: 476px;"></div><div class="hline" style="top: 504px;"></div><div class="hline half" style="top: 532px;"></div><div class="hline" style="top: 560px;"></div><div class="hline half" style="top: 588px;"></div><div class="hline" style="top: 616px;"></div><div class="hline half" style="top: 644px;"></div><div class="hline" style="top: 672px;"></div><div class="hline half" style="top: 700px;"></div><div class="hline" style="top: 728px;"></div><div class="hline half" style="top: 756px;"></div><div class="hline" style="top: 784px;"></div><div class="hline half" style="top: 812px;"></div><div class="hline" style="top: 840px;"></div><div class="hline half" style="top: 868px;"></div><div class="hline" style="top: 896px;"></div><div class="hline half" style="top: 924px;"></div><div class="hline" style="top: 952px;"></div><div class="hline half" style="top: 980px;"></div><div class="hline" style="top: 1008px;"></div><div class="hline half" style="top: 1036px;"></div><div class="hline" style="top: 1064px;"></div><div class="hline half" style="top: 1092px;"></div><div class="hline" style="top: 1120px;"></div><div class="hline half" style="top: 1148px;"></div><div class="hline" style="top: 1176px;"></div><div class="hline half" style="top: 1204px;"></div><div class="hline" style="top: 1232px;"></div><div class="hline half" style="top: 1260px;"></div><div class="hline" style="top: 1288px;"></div><div class="ev" style="top: 392px; height: 56px; background: rgb(45, 27, 78); color: rgb(221, 214, 254); border-right: 3px solid rgb(34, 197, 94); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">אימון כושר</span><span class="ev-time">07:00–08:00</span><div class="ev-subs"><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:00 חימום</div><div class="ev-sub "><span style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span> 07:10 כושר</div><div class="ev-sub">+1 עוד</div></div><div class="resize-handle"></div></div><div class="ev" style="top: 728px; height: 56px; background: rgb(26, 61, 43); color: rgb(134, 239, 172); border-right: 3px solid rgb(79, 142, 247); right: calc(0% + 2px); width: calc(100% - 4px); left: auto;"><span style="font-weight:500;line-height:1.2;display:block">ארוחת צהריים</span><span class="ev-time">13:00–14:00</span><div class="resize-handle"></div></div></div></div></div></div>
+  </div>
+</div>
+
+<div id="mBg" class="modal-bg" style="display: none;" onclick="closeMBg(event)">
+  <div class="modal" onclick="e=&gt;e.stopPropagation()">
+    <h3 id="mTitle">אירוע חדש</h3>
+    <div class="fr"><label>כותרת</label><input type="text" id="eT" placeholder="הוסף כותרת..."></div>
+    <div class="row2" style="margin-bottom:12px">
+      <div class="fr" style="margin:0"><label>יומן</label><select id="eCal" onchange="onCalChange()"><option value="1">דני כהן</option><option value="2">תזכורות</option><option value="3">משימות</option></select></div>
+      <div class="fr" style="margin:0"><label>צבע</label><div class="color-row" id="cRow"><div class="csw sel" style="background: rgb(79, 142, 247);"></div><div class="csw" style="background: rgb(34, 197, 94);"></div><div class="csw" style="background: rgb(244, 115, 115);"></div><div class="csw" style="background: rgb(251, 191, 36);"></div><div class="csw" style="background: rgb(167, 139, 250);"></div><div class="csw" style="background: rgb(244, 114, 182);"></div><div class="csw" style="background: rgb(34, 211, 238);"></div><div class="csw" style="background: rgb(251, 146, 60);"></div><div class="csw" style="background: rgb(74, 222, 128);"></div><div class="csw" style="background: rgb(251, 113, 133);"></div><div class="csw" style="background: rgb(129, 140, 248);"></div><div class="csw" style="background: rgb(45, 212, 191);"></div></div></div>
+    </div>
+    <div class="row2" style="margin-bottom:12px">
+      <div class="fr" style="margin:0"><label>תאריך</label><input type="date" id="eD"></div>
+      <div class="fr" style="margin:0"><label>כל היום</label><select id="eAD" onchange="toggleTimeFields()"><option value="0">לא</option><option value="1">כן</option></select></div>
+    </div>
+    <div id="tFields" class="row2" style="margin-bottom: 12px; display: grid;">
+      <div class="fr" style="margin:0"><label>התחלה</label><input type="time" id="eS" value="09:00"></div>
+      <div class="fr" style="margin:0"><label>סיום</label><input type="time" id="eE" value="10:00"></div>
+    </div>
+    <div class="row2" style="margin-bottom:12px">
+      <div class="fr" style="margin:0"><label>חזרתיות</label>
+        <select id="eRec" onchange="onRecChange()">
+          <option value="none">ללא</option><option value="daily">כל יום</option>
+          <option value="weekdays">א׳–ה׳</option><option value="weekly">כל שבוע</option>
+          <option value="monthly">כל חודש</option>
+        </select>
+      </div>
+      <div class="fr" id="recEndWrap" style="margin:0;display:none"><label>סיום חזרה</label><input type="date" id="eRE"></div>
+    </div>
+    <div class="fr"><label>מיקום</label><input type="text" id="eLoc" placeholder="הוסף מיקום"></div>
+    <div class="fr"><label>תיאור</label><textarea id="eDesc" placeholder="הוסף תיאור..."></textarea></div>
+    <div class="fr">
+      <label>תת-משימות</label>
+      <div class="sub-list" id="subList"></div>
+      <button class="sub-add-btn" onclick="addSubItem(&#39;&#39;,false,&#39;&#39;)"><i class="ti ti-plus" style="font-size:11px"></i> הוסף תת-משימה</button>
+    </div>
+    <div class="ma">
+      <button class="btn-d" id="bDel" style="display:none" onclick="delEvent()"><i class="ti ti-trash" style="font-size:12px"></i> מחק</button>
+      <button class="btn-d" id="bDelS" style="display:none" onclick="delSeries()">מחק סדרה</button>
+      <button class="btn-d" id="bStop" style="display:none" onclick="stopRec()">עצור חזרה</button>
+      <div style="margin-right:auto;display:flex;gap:6px">
+        <button class="btn-g" onclick="document.getElementById(&#39;mBg&#39;).style.display=&#39;none&#39;">ביטול</button>
+        <button class="btn-p" onclick="saveEv()">שמור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="recDlg" class="rec-dialog" style="display:none">
+  <div class="rec-modal">
+    <h4>עריכת אירוע חוזר</h4>
+    <div class="rec-opt" onclick="recChoice(&#39;one&#39;)"><i class="ti ti-calendar-event" style="font-size:16px;color:var(--acc)"></i> רק מופע זה</div>
+    <div class="rec-opt" onclick="recChoice(&#39;future&#39;)"><i class="ti ti-calendar-stats" style="font-size:16px;color:var(--acc)"></i> זה ואילך</div>
+    <div class="rec-opt" onclick="recChoice(&#39;all&#39;)"><i class="ti ti-calendar" style="font-size:16px;color:var(--acc)"></i> כל המופעים</div>
+    <div style="margin-top:8px;text-align:left"><button class="btn-g" onclick="document.getElementById(&#39;recDlg&#39;).style.display=&#39;none&#39;" style="font-size:12px">ביטול</button></div>
+  </div>
+</div>
+<div id="delRecDlg" class="rec-dialog" style="display:none">
+  <div class="rec-modal">
+    <h4>מחיקת אירוע חוזר</h4>
+    <div class="rec-opt" onclick="delRecChoice(&#39;one&#39;)"><i class="ti ti-calendar-event" style="font-size:16px;color:var(--red)"></i> רק מופע זה</div>
+    <div class="rec-opt" onclick="delRecChoice(&#39;future&#39;)"><i class="ti ti-calendar-stats" style="font-size:16px;color:var(--red)"></i> זה ואילך</div>
+    <div class="rec-opt" onclick="delRecChoice(&#39;all&#39;)"><i class="ti ti-calendar" style="font-size:16px;color:var(--red)"></i> כל המופעים</div>
+    <div style="margin-top:8px;text-align:left"><button class="btn-g" onclick="document.getElementById(&#39;delRecDlg&#39;).style.display=&#39;none&#39;" style="font-size:12px">ביטול</button></div>
+  </div>
+</div>
+
+<div id="admBg" class="adm-bg" style="display:none" onclick="closeAdmBg(event)">
+  <div class="adm-modal" onclick="e=&gt;e.stopPropagation()">
+    <h3 id="admTitle">משימות</h3>
+    <div id="admList"></div>
+    <div class="adm-input-row">
+      <input type="text" id="admInp" placeholder="משימה חדשה...">
+      <button class="btn-p" onclick="admAdd()" style="padding:7px 14px;font-size:12px">הוסף</button>
+    </div>
+    <div style="margin-top:12px;text-align:left"><button class="btn-g" onclick="closeAdmBg()" style="font-size:12px">סגור</button></div>
+  </div>
+</div>
+
+<div id="tooltip" class="tooltip" style="display: none; left: 991px; top: 314px;"><div class="tt-title">אימון כושר</div><div class="tt-row"><i class="ti ti-clock" style="font-size:12px;color:var(--tx2)"></i>06:45–07:45</div><div class="tt-row"><i class="ti ti-repeat" style="font-size:12px;color:var(--tx2)"></i>חוזר</div><div class="tt-row"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span><span style="">חימום</span></div><div class="tt-row"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span><span style="">כושר</span></div><div class="tt-row"><span style="width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;display:inline-block"></span><span style="">מתיחות</span></div></div>
+<div id="ghost" class="drag-ghost" style="display: none; background: rgb(34, 197, 94); left: 989px; top: 304px;">אימון כושר 06:45–07:45</div>
+<div id="undoBar" class="undo-bar" style="display: none;">פעולה בוצעה <button class="undo-btn" onclick="doUndo()"><i class="ti ti-arrow-back-up" style="font-size:13px"></i> בטל (Ctrl+Z)</button></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBE-37usBZ8A8TDdFPhkidW59HJR0ZAsPY",
+  authDomain: "yarel-calendar.firebaseapp.com",
+  projectId: "yarel-calendar",
+  storageBucket: "yarel-calendar.firebasestorage.app",
+  messagingSenderId: "1028911638468",
+  appId: "1:1028911638468:web:2e96e0de4792b306a8e691",
+  measurementId: "G-01E0EX8327"
+};
+
+const app = initializeApp(firebaseConfig);
+
+window.auth = getAuth(app);
+window.db = getFirestore(app);
+</script>
+
+<script>
+const HEM=["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+const HED=["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+const HEDS=["א","ב","ג","ד","ה","ו","ש"];
+const COLORS=[
+  {bg:'#1e3a5f',brd:'#4f8ef7',tx:'#a8c8ff'},{bg:'#1a3d2b',brd:'#22c55e',tx:'#86efac'},
+  {bg:'#3d1a1a',brd:'#f47373',tx:'#fca5a5'},{bg:'#3a2e0a',brd:'#fbbf24',tx:'#fde68a'},
+  {bg:'#2d1b4e',brd:'#a78bfa',tx:'#ddd6fe'},{bg:'#3d1a30',brd:'#f472b6',tx:'#fbcfe8'},
+  {bg:'#0e2f3e',brd:'#22d3ee',tx:'#a5f3fc'},{bg:'#3d2310',brd:'#fb923c',tx:'#fed7aa'},
+  {bg:'#1a3020',brd:'#4ade80',tx:'#bbf7d0'},{bg:'#3d1520',brd:'#fb7185',tx:'#fecdd3'},
+  {bg:'#1e2050',brd:'#818cf8',tx:'#c7d2fe'},{bg:'#0e3038',brd:'#2dd4bf',tx:'#99f6e4'},
+];
+let selC=0;
+const today=new Date();today.setHours(0,0,0,0);
+let cur=new Date(today),miniCur=new Date(today),view='r';
+let nextId=10,editId=null,editDate=null,admDate='',adTasks={};
+let pendingRecSave=null,pendingDelId=null,pendingDelDate=null;
+let undoStack=[],undoTimer=null;
+let wbodyEl=null;
+let isDragging=false;
+let cals=[{id:1,name:"דני כהן",color:"#4f8ef7",on:true},{id:2,name:"תזכורות",color:"#22c55e",on:true},{id:3,name:"משימות",color:"#f47373",on:true}];
+let nextCid=4,evs=[];
+
+function ds(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function pd(s){let[y,m,d]=s.split("-");return new Date(+y,+m-1,+d)}
+function tm(t){if(!t)return 0;let[h,m]=t.split(":").map(Number);return h*60+m}
+function ft(n){n=Math.max(0,Math.min(1440,Math.round(n/15)*15));return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")}
+const PX=56;
+function calById(id){return cals.find(c=>String(c.id)===String(id))||cals[0]||{color:'#4f8ef7',name:''}}
+
+function initDemo(){
+  let t=ds(today),d1=new Date(today),d2=new Date(today),d3=new Date(today);
+  d1.setDate(d1.getDate()+1);d2.setDate(d2.getDate()+2);d3.setDate(d3.getDate()+3);
+  evs=[
+    {id:1,title:"ישיבת צוות",date:t,start:"09:30",end:"10:30",ci:0,calId:1,rec:"none"},
+    {id:2,title:"אימון כושר",date:t,start:"07:00",end:"08:00",ci:4,calId:2,rec:"daily",subs:[{t:"חימום",d:false,time:"07:00"},{t:"כושר",d:false,time:"07:10"},{t:"מתיחות",d:false,time:"07:55"}]},
+    {id:3,title:"ארוחת צהריים",date:ds(d1),start:"13:00",end:"14:00",ci:1,calId:1,rec:"weekdays"},
+    {id:4,title:"סקירה שבועית",date:ds(d2),start:"10:00",end:"11:30",ci:6,calId:1,rec:"none"},
+    {id:5,title:"פגישת לקוח",date:ds(d3),start:"14:00",end:"15:00",ci:8,calId:1,rec:"none"},
+  ];
+}
+
+function expand(){
+  let out=[],horizon=new Date(cur);horizon.setMonth(horizon.getMonth()+4);
+  for(let ev of evs){
+    if(!ev.rec||ev.rec==='none'){out.push(ev);continue}
+    let base=pd(ev.date),end=ev.recEnd?pd(ev.recEnd):horizon,d=new Date(base),lim=0;
+    while(d<=end&&lim<500){
+      lim++;
+      let dstr=ds(d);
+      if(!(ev.delDates&&ev.delDates.includes(dstr))){
+        let ov=(ev.overrides&&ev.overrides[dstr])||{};
+        let cl={...ev,...ov,date:dstr,_base:ev.id,_virt:d.getTime()!==base.getTime()};
+        if(ev.subs)cl.subs=ev.subs.map(s=>({...s}));
+        out.push(cl);
+      }
+      if(ev.rec==='daily')d.setDate(d.getDate()+1);
+      else if(ev.rec==='weekdays'){d.setDate(d.getDate()+1);while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1)}
+      else if(ev.rec==='weekly')d.setDate(d.getDate()+7);
+      else if(ev.rec==='monthly')d.setMonth(d.getMonth()+1);
+      else break;
+    }
+  }
+  return out;
+}
+function forDate(dstr){return expand().filter(e=>e.date===dstr&&!e.allDay)}
+function adForDate(dstr){return expand().filter(e=>e.date===dstr&&e.allDay)}
+
+function buildMini(){
+  let y=miniCur.getFullYear(),mo=miniCur.getMonth();
+  document.getElementById('miniLbl').textContent=HEM[mo]+' '+y;
+  let g=document.getElementById('miniGrid');g.innerHTML='';
+  HEDS.forEach(d=>{let e=document.createElement('div');e.className='mdl';e.textContent=d;g.appendChild(e)});
+  let first=new Date(y,mo,1).getDay();
+  for(let i=0;i<first;i++){let e=document.createElement('div');e.className='md om';g.appendChild(e)}
+  for(let d=1;d<=new Date(y,mo+1,0).getDate();d++){
+    let e=document.createElement('div');e.className='md';e.textContent=d;
+    if(ds(new Date(y,mo,d))===ds(today))e.classList.add('today-dot');
+    e.onclick=()=>{cur=new Date(y,mo,d);miniCur=new Date(y,mo,d);render()};
+    g.appendChild(e);
+  }
+}
+function navMini(d){miniCur.setMonth(miniCur.getMonth()+d);buildMini()}
+
+function buildCalList(){
+  let cl=document.getElementById('calList');cl.innerHTML='';
+  cals.forEach((c,i)=>{
+    let row=document.createElement('div');row.className='cal-li';
+    let dot=document.createElement('div');dot.className='cal-dot';dot.style.background=c.on?c.color:'var(--bg4)';
+    let nm=document.createElement('span');nm.textContent=c.name;nm.style.flex='1';
+    let xb=document.createElement('span');xb.className='cal-x';xb.innerHTML='<i class="ti ti-x"></i>';
+    xb.onclick=(e)=>{e.stopPropagation();if(confirm('מחק יומן?')){cals.splice(i,1);buildCalList();buildCalSel();render()}};
+    dot.onclick=()=>{c.on=!c.on;buildCalList();render()};
+    nm.onclick=()=>{c.on=!c.on;buildCalList();render()};
+    row.appendChild(dot);row.appendChild(nm);row.appendChild(xb);cl.appendChild(row);
+  });
+}
+function buildCalSel(){
+  let s=document.getElementById('eCal');s.innerHTML='';
+  cals.forEach(c=>{let o=document.createElement('option');o.value=c.id;o.textContent=c.name;s.appendChild(o)});
+}
+function onCalChange(){
+  let cal=calById(document.getElementById('eCal').value);
+  let ci=COLORS.findIndex(c=>c.brd===cal.color);
+  if(ci>=0)buildColorRow(ci);
+}
+function addCal(){
+  let name=prompt('שם היומן:');if(!name)return;
+  let cols=['#4f8ef7','#22c55e','#f47373','#fbbf24','#a78bfa','#22d3ee','#fb923c','#f472b6'];
+  cals.push({id:nextCid++,name,color:cols[cals.length%cols.length],on:true});
+  buildCalList();buildCalSel();
+}
+function buildColorRow(sel){
+  selC=typeof sel==='number'?sel:0;
+  let row=document.getElementById('cRow');row.innerHTML='';
+  COLORS.forEach((c,i)=>{
+    let s=document.createElement('div');s.className='csw'+(i===selC?' sel':'');
+    s.style.background=c.brd;s.onclick=()=>{selC=i;buildColorRow(i)};row.appendChild(s);
+  });
+}
+
+function setView(v,el){
+  view=v;document.querySelectorAll('.vt').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();
+}
+function navMain(d){
+  let n=view==='3'?3:view==='d'?1:view==='m'?0:7;
+  if(view==='m')cur.setMonth(cur.getMonth()+d);
+  else cur.setDate(cur.getDate()+d*n);
+  render();
+}
+function goToday(){cur=new Date(today);render()}
+function scrollToNow(){if(wbodyEl){let nm=(new Date()).getHours()*60+(new Date()).getMinutes();wbodyEl.scrollTop=Math.max(0,nm*PX/60-130)}}
+
+function getSavedScroll(){return wbodyEl?wbodyEl.scrollTop:null}
+function restoreScroll(pos){if(wbodyEl&&pos!=null)wbodyEl.scrollTop=pos}
+
+function getDays(n,snap){
+  if(snap){let ws=new Date(cur);ws.setDate(cur.getDate()-cur.getDay());return Array.from({length:n},(_,i)=>{let d=new Date(ws);d.setDate(ws.getDate()+i);return d})}
+  return Array.from({length:n},(_,i)=>{let d=new Date(cur);d.setDate(cur.getDate()+i);return d});
+}
+
+function render(opts){
+  let savedScroll=opts&&opts.keepScroll?getSavedScroll():null;
+  buildMini();
+  if(view==='r')renderWeek(7,false);
+  else if(view==='w')renderWeek(7,true);
+  else if(view==='3')renderWeek(3,false);
+  else if(view==='d')renderWeek(1,false);
+  else if(view==='m')renderMonth();
+  else renderAgenda();
+  if(savedScroll!=null)setTimeout(()=>restoreScroll(savedScroll),0);
+}
+
+function renderWeek(numDays,snap){
+  let days=getDays(numDays,snap);
+  let f=days[0],l=days[days.length-1];
+  if(numDays===1)document.getElementById('mainLbl').textContent=HED[f.getDay()]+' '+f.getDate()+' '+HEM[f.getMonth()]+' '+f.getFullYear();
+  else document.getElementById('mainLbl').textContent=f.getMonth()===l.getMonth()?HEM[f.getMonth()]+' '+f.getFullYear():HEM[f.getMonth()]+'–'+HEM[l.getMonth()]+' '+f.getFullYear();
+  let vc=document.getElementById('vc');vc.innerHTML='';
+  let gcols='44px repeat('+numDays+',1fr)';
+
+  let hdr=document.createElement('div');hdr.className='wk-hdr';hdr.style.gridTemplateColumns=gcols;
+  let corner=document.createElement('div');corner.style.cssText='background:var(--bg1);border-left:1px solid var(--brd);display:flex;align-items:flex-end;padding:0 6px 4px;font-size:9px;color:var(--tx2)';corner.textContent='GMT+3';
+  hdr.appendChild(corner);
+  days.forEach(d=>{
+    let c=document.createElement('div');c.className='whc';
+    let isT=ds(d)===ds(today);
+    let dl=document.createElement('span');dl.className='day-label';dl.textContent=HED[d.getDay()];
+    let dn=document.createElement('div');dn.className='day-num'+(isT?' today-num':'');dn.textContent=d.getDate();
+    dn.onclick=()=>openAdm(ds(d));c.appendChild(dl);c.appendChild(dn);hdr.appendChild(c);
+  });
+  vc.appendChild(hdr);
+
+  let adrow=document.createElement('div');adrow.className='ad-row';adrow.style.gridTemplateColumns=gcols;
+  let adcorn=document.createElement('div');adcorn.className='ad-corner';adcorn.textContent='כל היום';adrow.appendChild(adcorn);
+  days.forEach(d=>{
+    let dstr=ds(d);let cell=document.createElement('div');cell.className='ad-cell';
+    adForDate(dstr).forEach(ev=>{
+      let c=COLORS[ev.ci||0];let el=document.createElement('div');el.className='ad-ev';
+      el.style.background=c.bg;el.style.color=c.tx;el.textContent=ev.title;
+      el.onclick=(e)=>{e.stopPropagation();editEv(ev)};cell.appendChild(el);
+    });
+    (adTasks[dstr]||[]).forEach(t=>{
+      let el=document.createElement('div');el.className='ad-ev';
+      el.style.cssText='background:var(--bg3);color:'+(t.d?'var(--tx2)':'var(--tx1)')+';text-decoration:'+(t.d?'line-through':'none');
+      el.textContent=t.t;el.onclick=()=>openAdm(dstr);cell.appendChild(el);
+    });
+    cell.onclick=(e)=>{if(e.target===cell)openModal(dstr,true)};
+    adrow.appendChild(cell);
+  });
+  vc.appendChild(adrow);
+
+  let body=document.createElement('div');body.className='wbody';wbodyEl=body;
+  let grid=document.createElement('div');grid.className='wgrid';grid.style.gridTemplateColumns=gcols;
+  let tc=document.createElement('div');tc.className='tcol';
+  for(let h=0;h<24;h++){let s=document.createElement('div');s.className='ts';s.textContent=h>0?h+':00':'';tc.appendChild(s)}
+  grid.appendChild(tc);
+
+  days.forEach(d=>{
+    let dstr=ds(d);let col=document.createElement('div');col.className='dcol';
+    for(let h=0;h<24;h++){
+      let l=document.createElement('div');l.className='hline';l.style.top=(h*PX)+'px';col.appendChild(l);
+      if(h<23){let lh=document.createElement('div');lh.className='hline half';lh.style.top=(h*PX+PX/2)+'px';col.appendChild(lh)}
+    }
+    layoutEvs(forDate(dstr)).forEach(({ev,layout})=>col.appendChild(mkEvEl(ev,layout,days,grid)));
+    col.onclick=(e)=>{
+      if(isDragging)return;
+      if(e.target===col||e.target.classList.contains('hline')||e.target.classList.contains('half')){
+        let r=col.getBoundingClientRect();let rel=e.clientY-r.top;
+        let h=Math.floor(rel/PX);let m=Math.round(((rel%PX)/PX)*60/15)*15;
+        openModal(dstr,false,ft(h*60+m),ft(h*60+m+60));
+      }
+    };
+    grid.appendChild(col);
+  });
+
+  let nowMin=(new Date()).getHours()*60+(new Date()).getMinutes();
+  let tIdx=days.findIndex(d=>ds(d)===ds(today));
+  if(tIdx>=0){
+    let tc2=grid.children[tIdx+1];
+    let nl=document.createElement('div');nl.className='now-line';nl.style.top=(nowMin*PX/60)+'px';
+    let nd=document.createElement('div');nd.className='now-dot';nl.appendChild(nd);tc2.appendChild(nl);
+    setTimeout(()=>{body.scrollTop=Math.max(0,nowMin*PX/60-130)},0);
+  }else{
+    setTimeout(()=>{body.scrollTop=8*PX},0);
+  }
+  body.appendChild(grid);vc.appendChild(body);
+}
+
+function renderMonth(){
+  let y=cur.getFullYear(),mo=cur.getMonth();
+  document.getElementById('mainLbl').textContent=HEM[mo]+' '+y;
+  let vc=document.getElementById('vc');vc.innerHTML='';wbodyEl=null;
+  let mg=document.createElement('div');mg.className='mo-grid';
+  HED.forEach(d=>{let e=document.createElement('div');e.className='mo-dl';e.textContent=d;mg.appendChild(e)});
+  let first=new Date(y,mo,1).getDay();
+  for(let i=0;i<first;i++){let c=document.createElement('div');c.className='mo-cell';c.style.opacity='.3';mg.appendChild(c)}
+  for(let d=1;d<=new Date(y,mo+1,0).getDate();d++){
+    let dstr=y+"-"+String(mo+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    let cell=document.createElement('div');cell.className='mo-cell';
+    let numEl=document.createElement('div');numEl.className='mo-num';numEl.textContent=d;
+    if(dstr===ds(today))numEl.classList.add('today-num');
+    numEl.onclick=(e)=>{e.stopPropagation();openAdm(dstr)};cell.appendChild(numEl);
+    let dayEvs=forDate(dstr);
+    dayEvs.slice(0,3).forEach(ev=>{
+      let el=document.createElement('div');el.className='mo-ev';let c=COLORS[ev.ci||0];
+      el.style.background=c.bg;el.style.color=c.tx;el.textContent=ev.start+' '+ev.title;
+      el.onclick=(e)=>{e.stopPropagation();editEv(ev)};
+      el.onmouseenter=(e)=>showTooltip(ev,e);el.onmouseleave=hideTooltip;cell.appendChild(el);
+    });
+    if(dayEvs.length>3){
+      let more=document.createElement('div');more.className='mo-more';more.textContent='+'+(dayEvs.length-3)+' עוד';
+      more.onclick=(e)=>{e.stopPropagation();cur=pd(dstr);setView('d',document.getElementById('vt-d'))};cell.appendChild(more);
+    }
+    cell.onclick=()=>{cur=pd(dstr);setView('d',document.getElementById('vt-d'))};
+    mg.appendChild(cell);
+  }
+  vc.appendChild(mg);
+}
+
+function renderAgenda(){
+  document.getElementById('mainLbl').textContent='סדר יום';
+  let vc=document.getElementById('vc');vc.innerHTML='';wbodyEl=null;
+  let ab=document.createElement('div');ab.className='ag-body';
+  let all=expand().filter(e=>!e.allDay).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
+  let last='';
+  all.forEach(ev=>{
+    if(ev.date!==last){last=ev.date;let d=pd(ev.date);let h=document.createElement('div');h.className='ag-dh';h.textContent=HED[d.getDay()]+' '+d.getDate()+' '+HEM[d.getMonth()]+' '+d.getFullYear();ab.appendChild(h)}
+    let c=COLORS[ev.ci||0];
+    let row=document.createElement('div');row.className='ag-ev';
+    row.innerHTML=`<div style="flex:1;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:500;background:${c.bg};color:${c.tx};border-right:3px solid ${c.brd}">${ev.title}${ev.rec&&ev.rec!=='none'?' <i class="ti ti-repeat" style="font-size:10px;opacity:.7"></i>':''}</div><span style="font-size:11px;color:var(--tx2);min-width:76px;flex-shrink:0;text-align:left">${ev.start}–${ev.end}</span>`;
+    row.onclick=()=>editEv(ev);row.onmouseenter=(e)=>showTooltip(ev,e);row.onmouseleave=hideTooltip;
+    ab.appendChild(row);
+  });
+  if(!all.length){let e=document.createElement('div');e.style.cssText='color:var(--tx2);text-align:center;padding:48px;font-size:14px';e.textContent='אין אירועים';ab.appendChild(e)}
+  vc.appendChild(ab);
+}
+
+function layoutEvs(events){
+  const sorted=events.map(ev=>({...ev,_s:tm(ev.start),_e:Math.max(tm(ev.start)+15,tm(ev.end))})).sort((a,b)=>a._s-b._s||a._e-b._e);
+  const groups=[];
+  sorted.forEach(ev=>{let grp=groups.find(g=>g.some(x=>ev._s<x._e&&ev._e>x._s));if(!grp){grp=[];groups.push(grp)}grp.push(ev)});
+  const out=[];
+  groups.forEach(grp=>{
+    const cols=[];
+    grp.forEach(ev=>{let ci=cols.findIndex(le=>le<=ev._s);if(ci===-1){ci=cols.length;cols.push(ev._e)}else cols[ci]=ev._e;ev._col=ci});
+    grp.forEach(ev=>out.push({ev,layout:{col:ev._col,total:cols.length}}));
+  });
+  return out;
+}
+
+function mkEvEl(ev,layout,days,grid){
+  let sm=tm(ev.start),em=Math.max(sm+15,tm(ev.end));
+  let top=sm*PX/60,h=Math.max(20,(em-sm)*PX/60);
+  let c=COLORS[ev.ci||0],calColor=calById(ev.calId).color;
+  let el=document.createElement('div');el.className='ev';
+  let gap=2,total=layout?layout.total:1,col=layout?layout.col:0;
+  el.style.cssText=`top:${top}px;height:${h}px;background:${c.bg};color:${c.tx};border-right:3px solid ${calColor};right:calc(${col*(100/total)}% + ${gap}px);width:calc(${100/total}% - ${gap*2}px);left:auto`;
+  let maxSubs=h<44?0:h<80?2:5;
+  let sortedSubs=(ev.subs||[]).slice().sort((a,b)=>tm(a.time||ev.start)-tm(b.time||ev.start));
+  let subsHtml=sortedSubs.length&&maxSubs>0?`<div class="ev-subs">${sortedSubs.slice(0,maxSubs).map(s=>`<div class="ev-sub ${s.d?'done':''}"><span style="width:5px;height:5px;border-radius:50%;background:${calColor};flex-shrink:0;display:inline-block"></span>${s.time?' '+s.time:''}${s.t?` ${s.t}`:''}</div>`).join('')}${sortedSubs.length>maxSubs?`<div class="ev-sub">+${sortedSubs.length-maxSubs} עוד</div>`:''}</div>`:'';
+  el.innerHTML=`<span style="font-weight:500;line-height:1.2;display:block">${ev.title}</span>${h>28?`<span class="ev-time">${ev.start}–${ev.end}</span>`:''}${subsHtml}`;
+  let rh=document.createElement('div');rh.className='resize-handle';
+  rh.addEventListener('mousedown',(e)=>{e.stopPropagation();e.preventDefault();startResize(ev,e)});
+  el.appendChild(rh);
+  el.addEventListener('mousedown',(e)=>{if(e.target.classList.contains('resize-handle'))return;if(e.button!==0)return;e.stopPropagation();e.preventDefault();startDrag(ev,el,e,days,grid)});
+  el.onmouseenter=(e)=>{if(!isDragging)showTooltip(ev,e)};el.onmouseleave=hideTooltip;
+  return el;
+}
+
+function startDrag(ev,el,startEv,days,grid){
+  let startX=startEv.clientX,startY=startEv.clientY,moved=false;
+  let ghost=document.getElementById('ghost');
+  let calColor=calById(ev.calId).color;
+  ghost.style.background=calColor;ghost.textContent=ev.title;
+  let preview=null;
+  let lastCol=null,lastTop=null;
+
+  let mm=(me)=>{
+    let dx=me.clientX-startX,dy=me.clientY-startY;
+    if(!moved&&(Math.abs(dx)>4||Math.abs(dy)>4)){moved=true;isDragging=true;ghost.style.display='block';el.style.opacity='.35';hideTooltip()}
+    if(!moved)return;
+    ghost.style.left=(me.clientX+14)+'px';ghost.style.top=(me.clientY-12)+'px';
+    let tgt=document.elementFromPoint(me.clientX,me.clientY);
+    let dcol=tgt&&(tgt.closest('.dcol'));
+    if(dcol){
+      let r=dcol.getBoundingClientRect();
+      let rel=me.clientY-r.top;
+      let ns=Math.max(0,Math.round(rel*60/PX/15)*15);
+      let dur=tm(ev.end)-tm(ev.start);
+      let ne=ns+dur;
+      ghost.textContent=ev.title+' '+ft(ns)+'–'+ft(ne);
+      if(dcol!==lastCol||ns!==lastTop){
+        if(preview&&preview.parentNode)preview.parentNode.removeChild(preview);
+        preview=document.createElement('div');preview.className='drop-preview';
+        let c=COLORS[ev.ci||0];
+        preview.style.cssText=`top:${ns*PX/60}px;height:${Math.max(20,dur*PX/60)}px;background:${c.bg};opacity:.5;left:2px;right:2px`;
+        dcol.appendChild(preview);lastCol=dcol;lastTop=ns;
+      }
+    }else{
+      if(preview&&preview.parentNode)preview.parentNode.removeChild(preview);preview=null;lastCol=null;
+    }
+  };
+
+  let mu=(me)=>{
+    ghost.style.display='none';el.style.opacity='';
+    if(preview&&preview.parentNode)preview.parentNode.removeChild(preview);
+    document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);
+
+    if(!moved){isDragging=false;editEv(ev);return}
+
+    let tgt=document.elementFromPoint(me.clientX,me.clientY);
+    let dcol=tgt&&tgt.closest('.dcol');
+
+    setTimeout(()=>{isDragging=false},50);
+
+    if(!dcol){render({keepScroll:true});return}
+    let r=dcol.getBoundingClientRect();
+    let rel=me.clientY-r.top;
+    let ns=Math.max(0,Math.min(1410,Math.round(rel*60/PX/15)*15));
+    let dur=Math.max(15,tm(ev.end)-tm(ev.start));
+    let ne=Math.min(1440,ns+dur);
+    let cols=days?Array.from(grid.querySelectorAll('.dcol')):[];
+    let idx=cols.indexOf(dcol);
+    if(days&&idx>=0&&days[idx]){
+      let nd=ds(days[idx]);
+      let orig=evs.find(e=>e.id===(ev._base||ev.id));
+      if(orig){
+        pushUndo(JSON.parse(JSON.stringify(evs)));
+
+        // *** התיקון: גרירת אירוע חוזר משנה רק את המופע הנגרר ***
+        if(orig.rec&&orig.rec!=='none'){
+          let srcDate=ev.date;
+          orig.overrides=orig.overrides||{};
+          // שמור override עם התאריך והשעות החדשים
+          orig.overrides[nd]={...((orig.overrides[srcDate])||{}),start:ft(ns),end:ft(ne)};
+          // אם הזזנו לתאריך אחר — סמן את המקור כנמחק ומחק את ה-override שם
+          if(nd!==srcDate){
+            if(orig.overrides[srcDate])delete orig.overrides[srcDate];
+            orig.delDates=orig.delDates||[];
+            if(!orig.delDates.includes(srcDate))orig.delDates.push(srcDate);
+          }
+        }else{
+          // אירוע רגיל — הזז ישירות
+          orig.date=nd;orig.start=ft(ns);orig.end=ft(ne);
+        }
+      }
+    }
+    render({keepScroll:true});
+  };
+
+  document.addEventListener('mousemove',mm,{passive:true});
+  document.addEventListener('mouseup',mu);
+}
+
+function startResize(ev,startEv){
+  isDragging=true;
+  let startY=startEv.clientY,origEnd=tm(ev.end);
+  let orig=evs.find(e=>e.id===(ev._base||ev.id));
+
+  let mm=(me)=>{
+    let dy=me.clientY-startY;
+    let newEnd=Math.max(tm(ev.start)+15,Math.round((origEnd+dy*60/PX)/15)*15);
+    if(orig){orig.end=ft(newEnd)}
+    let el=document.querySelector(`.ev[data-id="${ev.id}"]`);
+    if(!el)return;
+    let newH=Math.max(20,(newEnd-tm(ev.start))*PX/60);
+    el.style.height=newH+'px';
+    let t=el.querySelector('.ev-time');if(t)t.textContent=ev.start+'–'+ft(newEnd);
+  };
+
+  let mu=()=>{
+    document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);
+    setTimeout(()=>{isDragging=false},50);
+    render({keepScroll:true});
+  };
+  document.addEventListener('mousemove',mm,{passive:true});
+  document.addEventListener('mouseup',mu);
+}
+
+function showTooltip(ev,e){
+  let tt=document.getElementById('tooltip'),cal=calById(ev.calId);
+  let subsHtml=(ev.subs&&ev.subs.length)?ev.subs.slice(0,4).map(s=>`<div class="tt-row"><span style="width:6px;height:6px;border-radius:50%;background:${cal.color};flex-shrink:0;display:inline-block"></span><span style="${s.d?'text-decoration:line-through;opacity:.5':''}">${s.t}</span></div>`).join(''):'';
+  tt.innerHTML=`<div class="tt-title">${ev.title}</div>${!ev.allDay?`<div class="tt-row"><i class="ti ti-clock" style="font-size:12px;color:var(--tx2)"></i>${ev.start}–${ev.end}</div>`:''}${ev.loc?`<div class="tt-row"><i class="ti ti-map-pin" style="font-size:12px;color:var(--tx2)"></i>${ev.loc}</div>`:''}${ev.rec&&ev.rec!=='none'?`<div class="tt-row"><i class="ti ti-repeat" style="font-size:12px;color:var(--tx2)"></i>חוזר</div>`:''}${subsHtml}`;
+  tt.style.display='block';
+  let x=e.clientX+16,y=e.clientY-8;
+  if(x+230>window.innerWidth)x=e.clientX-230;
+  tt.style.left=x+'px';tt.style.top=y+'px';
+}
+function hideTooltip(){document.getElementById('tooltip').style.display='none'}
+
+function doSearch(q){
+  let sr=document.getElementById('searchResults');
+  if(!q||q.length<2){sr.style.display='none';return}
+  let hits=expand().filter(e=>e.title.toLowerCase().includes(q.toLowerCase())||(e.loc||'').toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  sr.innerHTML='';
+  hits.forEach(ev=>{
+    let d=pd(ev.date),item=document.createElement('div');item.className='sr-item';
+    item.innerHTML=`<strong>${ev.title}</strong><span class="sr-date">${HED[d.getDay()]} ${d.getDate()} ${HEM[d.getMonth()]} — ${ev.start||'כל היום'}</span>`;
+    item.onmousedown=(e)=>{e.preventDefault();sr.style.display='none';document.getElementById('searchInp').value='';cur=pd(ev.date);view='d';document.querySelectorAll('.vt').forEach(t=>t.classList.remove('active'));document.getElementById('vt-d').classList.add('active');render();setTimeout(()=>editEv(ev),80)};
+    sr.appendChild(item);
+  });
+  if(!hits.length){let n=document.createElement('div');n.className='sr-item';n.style.color='var(--tx2)';n.textContent='אין תוצאות';sr.appendChild(n)}
+  sr.style.display='block';
+}
+function hideSearch(){document.getElementById('searchResults').style.display='none'}
+
+function pushUndo(snap){undoStack.push(snap);if(undoStack.length>20)undoStack.shift();showUndoBar()}
+function showUndoBar(){
+  let bar=document.getElementById('undoBar');
+  bar.innerHTML='פעולה בוצעה <button class="undo-btn" onclick="doUndo()"><i class="ti ti-arrow-back-up" style="font-size:13px"></i> בטל (Ctrl+Z)</button>';
+  bar.style.display='flex';clearTimeout(undoTimer);undoTimer=setTimeout(()=>bar.style.display='none',4000);
+}
+function doUndo(){if(!undoStack.length)return;evs=undoStack.pop();document.getElementById('undoBar').style.display='none';render({keepScroll:true})}
+document.addEventListener('keydown',(e)=>{if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();doUndo()}});
+
+function openModal(date,allDay,s,e){
+  editId=null;editDate=null;
+  document.getElementById('mTitle').textContent='אירוע חדש';
+  document.getElementById('eT').value='';
+  document.getElementById('eD').value=date||ds(today);
+  document.getElementById('eAD').value=allDay?'1':'0';
+  document.getElementById('eS').value=s||'09:00';document.getElementById('eE').value=e||'10:00';
+  document.getElementById('eLoc').value='';document.getElementById('eDesc').value='';
+  document.getElementById('eRec').value='none';document.getElementById('eRE').value='';
+  document.getElementById('recEndWrap').style.display='none';
+  document.getElementById('tFields').style.display=allDay?'none':'grid';
+  document.getElementById('bDel').style.display='none';document.getElementById('bDelS').style.display='none';document.getElementById('bStop').style.display='none';
+  document.getElementById('subList').innerHTML='';
+  buildColorRow(0);buildCalSel();
+  document.getElementById('mBg').style.display='flex';
+  setTimeout(()=>document.getElementById('eT').focus(),50);
+}
+
+function editEv(ev){
+  if(isDragging)return;
+  let baseId=ev._base||ev.id;
+  let orig=evs.find(e=>e.id===baseId)||ev;
+  if(orig.rec&&orig.rec!=='none'){pendingRecSave={ev,orig};document.getElementById('recDlg').style.display='flex';return}
+  openEditModal(orig,ev.date);
+}
+
+function recChoice(mode){
+  document.getElementById('recDlg').style.display='none';
+  if(!pendingRecSave)return;
+  let{ev,orig}=pendingRecSave;pendingRecSave=null;
+  if(mode==='all')openEditModal(orig,orig.date);
+  else openEditModal({...orig,_editMode:mode,_editDate:ev.date},ev.date);
+}
+
+function openEditModal(orig,date){
+  editId=orig.id||orig._base;editDate=date;
+  document.getElementById('mTitle').textContent='עריכת אירוע';
+  document.getElementById('eT').value=orig.title;
+  document.getElementById('eD').value=orig._editDate||orig.date;
+  document.getElementById('eAD').value=orig.allDay?'1':'0';
+  document.getElementById('eS').value=orig.start||'09:00';document.getElementById('eE').value=orig.end||'10:00';
+  document.getElementById('eLoc').value=orig.loc||'';document.getElementById('eDesc').value=orig.desc||'';
+  document.getElementById('eRec').value=orig.rec||'none';document.getElementById('eRE').value=orig.recEnd||'';
+  document.getElementById('recEndWrap').style.display=orig.rec&&orig.rec!=='none'?'block':'none';
+  document.getElementById('tFields').style.display=orig.allDay?'none':'grid';
+  document.getElementById('bDel').style.display='';
+  document.getElementById('bDelS').style.display=orig.rec&&orig.rec!=='none'?'':'none';
+  document.getElementById('bStop').style.display=orig.rec&&orig.rec!=='none'?'':'none';
+  buildColorRow(orig.ci||0);buildCalSel();
+  if(orig.calId)document.getElementById('eCal').value=orig.calId;
+  let sl=document.getElementById('subList');sl.innerHTML='';
+  (orig.subs||[]).slice().sort((a,b)=>tm(a.time||'00:00')-tm(b.time||'00:00')).forEach(s=>addSubItem(s.t,s.d,s.time));
+  document.getElementById('mBg').style.display='flex';
+  document.getElementById('mBg').dataset.editMode=orig._editMode||'all';
+  document.getElementById('mBg').dataset.editDate=orig._editDate||orig.date;
+}
+
+function addSubItem(text,done,time){
+  let sl=document.getElementById('subList');
+  let row=document.createElement('div');row.className='sub-row';
+  let chk=document.createElement('input');chk.type='checkbox';chk.checked=!!done;
+  let tInp=document.createElement('input');tInp.type='time';tInp.value=time||document.getElementById('eS').value||'09:00';
+  let inp=document.createElement('input');inp.type='text';inp.value=text||'';inp.placeholder='תת-משימה...';
+  let rm=document.createElement('button');rm.className='rm-sub';rm.innerHTML='<i class="ti ti-x"></i>';rm.onclick=()=>row.remove();
+  row.appendChild(chk);row.appendChild(tInp);row.appendChild(inp);row.appendChild(rm);sl.appendChild(row);
+  if(!text)setTimeout(()=>inp.focus(),20);
+}
+function toggleTimeFields(){document.getElementById('tFields').style.display=document.getElementById('eAD').value==='1'?'none':'grid'}
+function onRecChange(){document.getElementById('recEndWrap').style.display=document.getElementById('eRec').value!=='none'?'block':'none'}
+
+function saveEv(){
+  let title=document.getElementById('eT').value.trim();if(!title)return;
+  let subs=[];
+  document.querySelectorAll('#subList .sub-row').forEach(r=>{
+    let t=r.querySelector('input[type=text]').value.trim();
+    let d=r.querySelector('input[type=checkbox]').checked;
+    let time=r.querySelector('input[type=time]').value;
+    if(t)subs.push({t,d,time});
+  });
+  subs.sort((a,b)=>tm(a.time)-tm(b.time));
+  let data={title,date:document.getElementById('eD').value,allDay:document.getElementById('eAD').value==='1',start:document.getElementById('eS').value,end:document.getElementById('eE').value,ci:selC,calId:+document.getElementById('eCal').value,loc:document.getElementById('eLoc').value,desc:document.getElementById('eDesc').value,rec:document.getElementById('eRec').value,recEnd:document.getElementById('eRE').value,subs};
+  if(editId){
+    let i=evs.findIndex(e=>e.id===editId);
+    if(i>=0){
+      pushUndo(JSON.parse(JSON.stringify(evs)));
+      let orig=evs[i],mode=document.getElementById('mBg').dataset.editMode||'all';
+      let eDate=document.getElementById('mBg').dataset.editDate||editDate;
+      if(orig.rec&&orig.rec!=='none'&&mode==='one'){orig.overrides=orig.overrides||{};orig.overrides[eDate]={...data}}
+      else if(orig.rec&&orig.rec!=='none'&&mode==='future'){orig.recEnd=prevDay(eDate);evs.push({...data,id:nextId++})}
+      else evs[i]={...orig,...data};
+    }
+  }else{pushUndo(JSON.parse(JSON.stringify(evs)));data.id=nextId++;evs.push(data)}
+  document.getElementById('mBg').style.display='none';render({keepScroll:true});
+}
+
+function prevDay(dstr){let d=pd(dstr);d.setDate(d.getDate()-1);return ds(d)}
+
+function delEvent(){
+  let orig=evs.find(e=>e.id===editId);
+  document.getElementById('mBg').style.display='none';
+  if(!orig){render({keepScroll:true});return}
+  if(orig.rec&&orig.rec!=='none'){pendingDelId=editId;pendingDelDate=editDate;document.getElementById('delRecDlg').style.display='flex';return}
+  pushUndo(JSON.parse(JSON.stringify(evs)));
+  evs=evs.filter(e=>e.id!==editId);
+  render({keepScroll:true});showUndoBar();
+}
+function delRecChoice(mode){
+  document.getElementById('delRecDlg').style.display='none';
+  if(!pendingDelId)return;
+  pushUndo(JSON.parse(JSON.stringify(evs)));
+  let orig=evs.find(e=>e.id===pendingDelId);
+  if(orig){
+    if(mode==='one'){orig.delDates=orig.delDates||[];if(!orig.delDates.includes(pendingDelDate))orig.delDates.push(pendingDelDate)}
+    else if(mode==='future')orig.recEnd=prevDay(pendingDelDate);
+    else evs=evs.filter(e=>e.id!==pendingDelId);
+  }
+  pendingDelId=null;pendingDelDate=null;
+  render({keepScroll:true});showUndoBar();
+}
+function delSeries(){
+  pushUndo(JSON.parse(JSON.stringify(evs)));
+  evs=evs.filter(e=>e.id!==editId);
+  document.getElementById('mBg').style.display='none';render({keepScroll:true});showUndoBar();
+}
+function stopRec(){
+  let ev=evs.find(e=>e.id===editId);
+  if(ev){pushUndo(JSON.parse(JSON.stringify(evs)));ev.rec='none';ev.recEnd=''}
+  document.getElementById('mBg').style.display='none';render({keepScroll:true});
+}
+function closeMBg(e){if(e.target.id==='mBg')document.getElementById('mBg').style.display='none'}
+
+function openAdm(dstr){
+  admDate=dstr;let d=pd(dstr);
+  document.getElementById('admTitle').textContent='משימות – '+HED[d.getDay()]+' '+d.getDate()+' '+HEM[d.getMonth()];
+  renderAdmList();document.getElementById('admBg').style.display='flex';
+  setTimeout(()=>document.getElementById('admInp').focus(),50);
+}
+function closeAdmBg(e){if(!e||e.target.id==='admBg')document.getElementById('admBg').style.display='none'}
+function renderAdmList(){
+  let list=adTasks[admDate]||[],sl=document.getElementById('admList');sl.innerHTML='';
+  list.forEach((t,i)=>{
+    let row=document.createElement('div');row.className='adm-row';
+    let chk=document.createElement('input');chk.type='checkbox';chk.checked=t.d;
+    chk.onchange=()=>{adTasks[admDate][i].d=chk.checked;renderAdmList();render({keepScroll:true})};
+    let sp=document.createElement('span');sp.textContent=t.t;sp.style.cssText='flex:1;color:'+(t.d?'var(--tx2)':'var(--tx0)')+';text-decoration:'+(t.d?'line-through':'none');
+    let rm=document.createElement('span');rm.className='rm';rm.innerHTML='<i class="ti ti-x"></i>';
+    rm.onclick=()=>{adTasks[admDate].splice(i,1);renderAdmList();render({keepScroll:true})};
+    row.appendChild(chk);row.appendChild(sp);row.appendChild(rm);sl.appendChild(row);
+  });
+}
+function admAdd(){
+  let inp=document.getElementById('admInp'),t=inp.value.trim();if(!t)return;
+  if(!adTasks[admDate])adTasks[admDate]=[];
+  adTasks[admDate].push({t,d:false});inp.value='';renderAdmList();render({keepScroll:true});
+}
+
+initDemo();buildCalList();buildCalSel();buildColorRow(0);render();
+</script>
+
+
+</body></html>
