@@ -916,7 +916,53 @@ initDemo();
 buildCalList();
 buildCalSel();
 buildColorRow(0);
-render();</script>
+render();
+async function saveToCloud(){
+  try{
+    if(!window.db)return;
+    localStorage.setItem('calendar_backup',JSON.stringify({evs,cals,adTasks}));
+
+    await window.setDoc(
+      window.doc(window.db,'calendars','main'),
+      {
+        evs,
+        cals,
+        adTasks,
+        updated:Date.now()
+      }
+    );
+  }catch(err){
+    console.error(err);
+  }
+}
+
+async function loadFromCloud(){
+  try{
+    if(!window.db)return;
+
+    let snap=await window.getDoc(
+      window.doc(window.db,'calendars','main')
+    );
+
+    if(snap.exists()){
+      let data=snap.data();
+
+      if(data.evs)evs=data.evs;
+      if(data.cals)cals=data.cals;
+      if(data.adTasks)adTasks=data.adTasks;
+
+      buildCalList();
+      buildCalSel();
+      render();
+    }
+  }catch(err){
+    console.error(err);
+  }
+}
+  loadFromCloud();
+setInterval(saveToCloud, 5000);
+  
+</script>
 
 
 </body></html>
